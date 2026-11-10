@@ -1,0 +1,46 @@
+name: four-in-a-row
+
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: c4
+  cancel-in-progress: false
+
+jobs:
+  move:
+    if: startsWith(github.event.issue.title, 'c4|')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      TITLE: ${{ github.event.issue.title }}
+      PLAYER: ${{ github.event.issue.user.login }}
+      ISSUE: ${{ github.event.issue.number }}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Play the move
+        run: python3 game/c4.py move --title "$TITLE" --user "$PLAYER" --reply "$RUNNER_TEMP/reply.md"
+
+      - name: Commit the board
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add game/state.json assets/c4 README.md
+          if ! git diff --cached --quiet; then
+            git commit -q -m "four-in-a-row: move by @$PLAYER (#$ISSUE)"
+            for i in 1 2 3; do git push -q && break || git pull -q --rebase; done
+          fi
+
+      - name: Answer and close the issue
+        if: always()
+        run: |
+          [ -f "$RUNNER_TEMP/reply.md" ] || echo "Something went wrong with this move. Try again from the [profile](https://github.com/heavy-shark)." > "$RUNNER_TEMP/reply.md"
+          gh issue comment "$ISSUE" --repo "$GITHUB_REPOSITORY" --body-file "$RUNNER_TEMP/reply.md"
+          gh issue close "$ISSUE" --repo "$GITHUB_REPOSITORY"

@@ -1,0 +1,21 @@
+{
+ "board": [
+  [],
+  [],
+  [],
+  [],
+  [],
+  [],
+  []
+ ],
+ "status": "playing",
+ "game": 1,
+ "score": {
+  "people": 0,
+  "shark": 0,
+  "draw": 0
+ },
+ "last": null,
+ "players": [],
+ "version": 0
+}
