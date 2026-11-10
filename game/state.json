@@ -1,13 +1,9 @@
 {
  "board": [
   [],
-  [
-   "S"
-  ],
   [],
-  [
-   "P"
-  ],
+  [],
+  [],
   [],
   [],
   []
@@ -19,13 +15,7 @@
   "shark": 0,
   "draw": 0
  },
- "last": {
-  "user": "heavy-shark",
-  "col": 3,
-  "shark": 1
- },
- "players": [
-  "heavy-shark"
- ],
- "version": 1
+ "last": null,
+ "players": [],
+ "version": 2
 }
